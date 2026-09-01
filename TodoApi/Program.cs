@@ -13,6 +13,14 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var container = scope.ServiceProvider;
+    var db = container.GetRequiredService<TodoDb>();
+
+    db.Database.EnsureCreated();
+}
+
 var todoItems = app.MapGroup("/todoitems");
 
 todoItems.MapGet("/", GetAllTodos);

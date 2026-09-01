@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using TodoApi;
@@ -6,6 +7,9 @@ using TodoApi.Services;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
 builder.Services.AddOpenApi();
+builder.Services.AddAuthorization();
+builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+    .AddEntityFrameworkStores<TodoDb>();
 builder.Services.AddScoped<IQuoteService, QuoteService>();
 var app = builder.Build();
 
@@ -33,6 +37,7 @@ todoItems.MapPut("/{id}", UpdateTodo);
 todoItems.MapPatch("/{id}", PatchTodo);
 todoItems.MapDelete("/{id}", DeleteTodo);
 
+app.MapIdentityApi<IdentityUser>();
 app.MapGet("/quote", async (IQuoteService service) => await service.GenerateQuote());
 
 app.Run();

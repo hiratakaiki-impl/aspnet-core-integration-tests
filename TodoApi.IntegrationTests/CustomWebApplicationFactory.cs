@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 
 namespace TodoApi.IntegrationTests;
 
@@ -36,5 +38,25 @@ public class CustomWebApplicationFactory<TProgram>
         });
 
         builder.UseEnvironment("Development");
+
+        base.ConfigureWebHost(builder);
+        builder.ConfigureAppConfiguration(builder =>
+        {
+            builder.AddInMemoryCollection(s_inMemorySettings);
+        });
+    }
+
+    private static readonly KeyValuePair<string, string?>[] s_inMemorySettings =
+    [
+        new("TestConfigKey", "TestConfigValue"),
+    ];
+
+    protected override IHost CreateHost(IHostBuilder builder)
+    {
+        builder.ConfigureHostConfiguration(builder =>
+        {
+            builder.AddInMemoryCollection(s_inMemorySettings);
+        });
+        return base.CreateHost(builder);
     }
 }

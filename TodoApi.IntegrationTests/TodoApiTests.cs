@@ -7,7 +7,10 @@ public class TodoApiTests(
     CustomWebApplicationFactory<Program> factory) :
     IClassFixture<CustomWebApplicationFactory<Program>>
 {
-    private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _client = factory.CreateClient(new()
+    {
+        AllowAutoRedirect = false
+    });
     private readonly CustomWebApplicationFactory<Program>
         _factory = factory;
 

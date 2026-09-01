@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using TodoApi;
+using TodoApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
 builder.Services.AddOpenApi();
+builder.Services.AddScoped<IQuoteService, QuoteService>();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -30,6 +32,8 @@ todoItems.MapPost("/", CreateTodo);
 todoItems.MapPut("/{id}", UpdateTodo);
 todoItems.MapPatch("/{id}", PatchTodo);
 todoItems.MapDelete("/{id}", DeleteTodo);
+
+app.MapGet("/quote", async (IQuoteService service) => await service.GenerateQuote());
 
 app.Run();
 
